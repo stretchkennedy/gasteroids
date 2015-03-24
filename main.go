@@ -53,9 +53,6 @@ func glSetup() {
 		log.Panic(err)
 	}
 
-	version := gl.GoStr(gl.GetString(gl.VERSION))
-	log.Println("OpenGL version: ", version)
-
 	gl.Enable(gl.DEPTH_TEST) // depth testing
 	gl.DepthFunc(gl.LESS)    // smaller is closer
 }
