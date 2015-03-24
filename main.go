@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"runtime"
+	"math/rand"
+	"time"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/go-gl/glfw/v3.1/glfw"
@@ -29,12 +31,8 @@ func main() {
 	window.MakeContextCurrent()
 
 	// game setup
-	verts := []float32{
-		0.0, 0.5, 0.0,
-		0.5, -0.5, 0.0,
-		-0.5, -0.5, 0.0,
-	}
-	ast := obj.NewAsteroid(verts)
+	rand.Seed(time.Now().UTC().UnixNano())
+	ast := obj.NewAsteroid(9)
 
 	//// MAIN LOOP
 	for !window.ShouldClose() {

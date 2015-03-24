@@ -2,6 +2,8 @@ package obj
 
 import (
 	"log"
+	"math"
+	"math/rand"
 	. "unsafe"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
@@ -21,16 +23,27 @@ type Asteroid struct {
 	Vertices []float32
 }
 
-func NewAsteroid(vertices []float32) *Asteroid {
-	ast := &Asteroid{Vertices: vertices}
-	ast.setup()
-	return ast
-}
-
 const glAttrNum = 0
 const glVecNum = 3
 
-func (ast *Asteroid) setup() {
+func NewAsteroid(sides int) *Asteroid {
+	ast := &Asteroid{Vertices: make([]float32, (sides) * glVecNum)}
+
+	for i := 0; i < sides; i++ {
+		radiusModifier := rand.Float32() / 2.0 + 0.5
+		angle := (math.Pi * 2.0) * (float64(i) / float64(sides))
+		ast.Vertices[i*glVecNum + 0] = float32(math.Cos(angle)) * radiusModifier //x
+		ast.Vertices[i*glVecNum + 1] = float32(math.Sin(angle)) * radiusModifier //y
+	}
+
+	ast.refreshGeometry()
+	return ast
+}
+
+func (ast *Asteroid) refreshGeometry() {
+	// remove previous geometry data
+	ast.clearGeometry()
+
 	// setup vao
 	gl.GenVertexArrays(1, &ast.vao)
 	gl.BindVertexArray(ast.vao)
@@ -52,10 +65,16 @@ func (ast *Asteroid) setup() {
 	}
 }
 
+func (ast *Asteroid) clearGeometry() {
+	gl.DeleteVertexArrays(1, &ast.vao)
+	gl.DeleteBuffers(1, &ast.vbo)
+	gl.DeleteProgram(ast.program)
+}
+
 func (ast *Asteroid) Render() {
 	gl.UseProgram(ast.program)
 	gl.BindVertexArray(ast.vao)
-	gl.DrawArrays(gl.TRIANGLES, glAttrNum, glVecNum)
+	gl.DrawArrays(gl.LINE_LOOP, glAttrNum, int32(len(ast.Vertices) / glVecNum))
 }
 
 var vertexShader string = `
