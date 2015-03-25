@@ -42,6 +42,7 @@ func (ast *Asteroid) Update(elapsed float64) {
 func (ast *Asteroid) Render() {
 	gl.UseProgram(ast.program)
 	gl.BindVertexArray(ast.vao)
+	gl.BindBuffer(gl.ARRAY_BUFFER, ast.vbo)
 	gl.DrawArrays(gl.LINE_LOOP, glAttrNum, int32(len(ast.Vertices) / glVecNum))
 }
 
