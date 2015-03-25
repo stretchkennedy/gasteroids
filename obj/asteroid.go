@@ -11,11 +11,6 @@ import (
 	"github.com/stretchkennedy/gasteroids/program"
 )
 
-type GameObject interface {
-	Render()
-	Update(delta int)
-}
-
 type Asteroid struct {
 	vao uint32
 	vbo uint32
@@ -38,6 +33,16 @@ func NewAsteroid(sides int) *Asteroid {
 
 	ast.refreshGeometry()
 	return ast
+}
+
+func (ast *Asteroid) Update(elapsed float64) {
+
+}
+
+func (ast *Asteroid) Render() {
+	gl.UseProgram(ast.program)
+	gl.BindVertexArray(ast.vao)
+	gl.DrawArrays(gl.LINE_LOOP, glAttrNum, int32(len(ast.Vertices) / glVecNum))
 }
 
 func (ast *Asteroid) refreshGeometry() {
@@ -69,12 +74,6 @@ func (ast *Asteroid) clearGeometry() {
 	gl.DeleteVertexArrays(1, &ast.vao)
 	gl.DeleteBuffers(1, &ast.vbo)
 	gl.DeleteProgram(ast.program)
-}
-
-func (ast *Asteroid) Render() {
-	gl.UseProgram(ast.program)
-	gl.BindVertexArray(ast.vao)
-	gl.DrawArrays(gl.LINE_LOOP, glAttrNum, int32(len(ast.Vertices) / glVecNum))
 }
 
 var vertexShader string = `

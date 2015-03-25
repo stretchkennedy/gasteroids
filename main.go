@@ -32,14 +32,25 @@ func main() {
 
 	// game setup
 	rand.Seed(time.Now().UTC().UnixNano())
-	ast := obj.NewAsteroid(9)
+	var objects []obj.GameObject
+	objects = []obj.GameObject{obj.NewAsteroid(9), obj.NewAsteroid(8)}
 
 	//// MAIN LOOP
+	previousTime := glfw.GetTime()
 	for !window.ShouldClose() {
+		// start
+		time := glfw.GetTime()
+		elapsed := time - previousTime
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-		ast.Render()
+		// content
+		for _, o := range objects {
+			o.Update(elapsed)
+			o.Render()
+		}
 
+		// end
+		previousTime = time
 		window.SwapBuffers()
 		glfw.PollEvents()
 	}
