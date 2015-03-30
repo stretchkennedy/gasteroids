@@ -17,6 +17,9 @@ type Asteroid struct {
 	y float32
 	r float32
 
+	xVelocity float32
+	yVelocity float32
+
 	vao uint32
 	vbo uint32
 	program uint32
@@ -26,11 +29,13 @@ type Asteroid struct {
 const glAttrNum = 0
 const glVecNum = 3
 
-func NewAsteroid(sides int, x, y float32) *Asteroid {
+func NewAsteroid(sides int, x, y, xVel, yVel float32) *Asteroid {
 	ast := &Asteroid{
 		Vertices: make([]float32, (sides) * glVecNum),
 		x: x,
 		y: y,
+		xVelocity: xVel,
+		yVelocity: yVel,
 	}
 
 	for i := 0; i < sides; i++ {
@@ -46,7 +51,21 @@ func NewAsteroid(sides int, x, y float32) *Asteroid {
 }
 
 func (ast *Asteroid) Update(elapsed float64) {
+	ast.x += ast.xVelocity * float32(elapsed)
+	ast.y += ast.yVelocity * float32(elapsed)
 
+	if ast.x > 10 + ast.r {
+		ast.x = 0 - ast.r
+	}
+	if ast.x < 0 - ast.r {
+		ast.x = 10 + ast.r
+	}
+	if ast.y > 10 + ast.r {
+		ast.y = 0 - ast.r
+	}
+	if ast.y < 0 - ast.r {
+		ast.y = 10 + ast.r
+	}
 }
 
 func (ast *Asteroid) Render() {

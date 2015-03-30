@@ -33,7 +33,7 @@ func main() {
 	// game setup
 	rand.Seed(time.Now().UTC().UnixNano())
 	var objects []obj.GameObject
-	objects = []obj.GameObject{obj.NewAsteroid(9, 3, 3), obj.NewAsteroid(9, 7, 7)}
+	objects = []obj.GameObject{obj.NewAsteroid(9, 3, 3, 2, 1), obj.NewAsteroid(9, 7, 7, 1, 2)}
 
 	//// MAIN LOOP
 	previousTime := glfw.GetTime()
