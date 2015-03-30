@@ -7,42 +7,37 @@ import (
 	. "unsafe"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
-	"github.com/go-gl/mathgl/mgl32"
+	. "github.com/go-gl/mathgl/mgl32"
 
 	"github.com/stretchkennedy/gasteroids/program"
 )
 
 type Asteroid struct {
-	x float32
-	y float32
 	r float32
-
-	xVelocity float32
-	yVelocity float32
+	position Vec2
+	velocity Vec2
 
 	vao uint32
 	vbo uint32
 	program uint32
-	Vertices []float32
+	vertices []float32
 }
 
 const glAttrNum = 0
 const glVecNum = 3
 
-func NewAsteroid(sides int, x, y, xVel, yVel float32) *Asteroid {
+func NewAsteroid(sides int, position, velocity Vec2) *Asteroid {
 	ast := &Asteroid{
-		Vertices: make([]float32, (sides) * glVecNum),
-		x: x,
-		y: y,
-		xVelocity: xVel,
-		yVelocity: yVel,
+		vertices: make([]float32, (sides) * glVecNum),
+		position: position,
+		velocity: velocity,
 	}
 
 	for i := 0; i < sides; i++ {
 		radiusModifier := rand.Float32() / 2.0 + 0.5
 		angle := (math.Pi * 2.0) * (float64(i) / float64(sides))
-		ast.Vertices[i*glVecNum + 0] = float32(math.Cos(angle)) * radiusModifier //x
-		ast.Vertices[i*glVecNum + 1] = float32(math.Sin(angle)) * radiusModifier //y
+		ast.vertices[i*glVecNum + 0] = float32(math.Cos(angle)) * radiusModifier //x
+		ast.vertices[i*glVecNum + 1] = float32(math.Sin(angle)) * radiusModifier //y
 		ast.r = float32(math.Max(float64(radiusModifier), float64(ast.r))) //circle describing outer bounds
 	}
 
@@ -50,38 +45,41 @@ func NewAsteroid(sides int, x, y, xVel, yVel float32) *Asteroid {
 	return ast
 }
 
-func (ast *Asteroid) Update(elapsed float64) {
-	ast.x += ast.xVelocity * float32(elapsed)
-	ast.y += ast.yVelocity * float32(elapsed)
+func (ast *Asteroid) Update(height, width float32, elapsed float64) {
+	ast.position =
+		ast.position.Add(
+		ast.velocity.Mul(
+			float32(elapsed)))
 
-	if ast.x > 10 + ast.r {
-		ast.x = 0 - ast.r
+	// for each dimension, wrap position
+	if ast.position[0] > width + ast.r {
+		ast.position[0] = 0 - ast.r
 	}
-	if ast.x < 0 - ast.r {
-		ast.x = 10 + ast.r
+	if ast.position[0] < 0 - ast.r {
+		ast.position[0] = width + ast.r
 	}
-	if ast.y > 10 + ast.r {
-		ast.y = 0 - ast.r
+	if ast.position[1] > height + ast.r {
+		ast.position[1] = 0 - ast.r
 	}
-	if ast.y < 0 - ast.r {
-		ast.y = 10 + ast.r
+	if ast.position[1] < 0 - ast.r {
+		ast.position[1] = height + ast.r
 	}
 }
 
-func (ast *Asteroid) Render() {
+func (ast *Asteroid) Render(height, width float32) {
 	//// MVP matrices
     // setup projection
-	projection := mgl32.Ortho2D(0.0, 10.0, 10.0, 1.0) // 2d orthogonal
+	projection := Ortho2D(0.0, width, height, 0.0) // 2d orthogonal, LRBT
 	projectionLoc := gl.GetUniformLocation(ast.program, gl.Str("projection\x00"))
 	gl.UniformMatrix4fv(projectionLoc, 1, false, &projection[0])
 
 	// setup camera
-	view := mgl32.Ident4() // identity matrix
+	view := Ident4() // identity matrix
 	viewLoc := gl.GetUniformLocation(ast.program, gl.Str("view\x00"))
 	gl.UniformMatrix4fv(viewLoc, 1, false, &view[0])
 
 	// setup model
-	model := mgl32.Translate3D(ast.x, ast.y, 0) // move model
+	model := Translate3D(ast.position.X(), ast.position.Y(), 0) // move model
 	modelLoc := gl.GetUniformLocation(ast.program, gl.Str("model\x00"))
 	gl.UniformMatrix4fv(modelLoc, 1, false, &model[0])
 
@@ -91,7 +89,7 @@ func (ast *Asteroid) Render() {
 	gl.BindBuffer(gl.ARRAY_BUFFER, ast.vbo)
 
 	//// draw geometry
-	gl.DrawArrays(gl.LINE_LOOP, glAttrNum, int32(len(ast.Vertices) / glVecNum))
+	gl.DrawArrays(gl.LINE_LOOP, glAttrNum, int32(len(ast.vertices) / glVecNum))
 }
 
 func (ast *Asteroid) refreshGeometry() {
@@ -105,7 +103,7 @@ func (ast *Asteroid) refreshGeometry() {
 	// setup vbo
 	gl.GenBuffers(1, &ast.vbo)
 	gl.BindBuffer(gl.ARRAY_BUFFER, ast.vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, len(ast.Vertices) * int(Sizeof(gl.FLOAT)), gl.Ptr(ast.Vertices), gl.STATIC_DRAW)
+	gl.BufferData(gl.ARRAY_BUFFER, len(ast.vertices) * int(Sizeof(gl.FLOAT)), gl.Ptr(ast.vertices), gl.STATIC_DRAW)
 
 	// setup attribute array
 	gl.EnableVertexAttribArray(glAttrNum)

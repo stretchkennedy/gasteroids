@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
+	. "github.com/go-gl/mathgl/mgl32"
 	"github.com/go-gl/glfw/v3.1/glfw"
 
 	"github.com/stretchkennedy/gasteroids/obj"
@@ -33,23 +34,30 @@ func main() {
 	// game setup
 	rand.Seed(time.Now().UTC().UnixNano())
 	var objects []obj.GameObject
-	objects = []obj.GameObject{obj.NewAsteroid(9, 3, 3, 2, 1), obj.NewAsteroid(9, 7, 7, 1, 2)}
+	objects = []obj.GameObject{obj.NewAsteroid(9, Vec2{3, 3},  Vec2{2, 1}), obj.NewAsteroid(9, Vec2{7, 7}, Vec2{1, 2})}
 
 	//// MAIN LOOP
 	previousTime := glfw.GetTime()
 	for !window.ShouldClose() {
-		// start
+		// retrieve information
 		time := glfw.GetTime()
 		elapsed := time - previousTime
+
+		rawWidth, rawHeight:= window.GetFramebufferSize()
+		height := float32(10.0)
+		width := float32(rawWidth) / float32(rawHeight) * height
+
+		// clear buffer
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-		// content
+		// handle physics, controls, etc.
 		for _, o := range objects {
-			o.Update(elapsed)
+			o.Update(height, width, elapsed)
 		}
 
+		// draw to window
 		for _, o := range objects {
-			o.Render()
+			o.Render(height, width)
 		}
 
 		// end
