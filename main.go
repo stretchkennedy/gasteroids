@@ -99,6 +99,7 @@ func glfwTeardown() {
 
 func NewWindow(h int, w int) *glfw.Window {
 	window, err := glfw.CreateWindow(h, w, "Gasteroids", glfw.GetPrimaryMonitor(), nil)
+	window.SetInputMode(glfw.CursorMode, glfw.CursorDisabled)
 	if err != nil {
 		log.Panic(err)
 	}
