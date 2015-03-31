@@ -26,8 +26,8 @@ type Asteroid struct {
 const glAttrNum = 0
 const glVecNum = 3
 
-func NewAsteroid(sides int, position, velocity Vec2) *Asteroid {
-	ast := &Asteroid{
+func NewAsteroid(sides int, position, velocity Vec2) (ast *Asteroid) {
+	ast = &Asteroid{
 		vertices: make([]float32, (sides) * glVecNum),
 		position: position,
 		velocity: velocity,
