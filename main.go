@@ -5,6 +5,8 @@ import (
 	"runtime"
 	"math/rand"
 	"time"
+	"os"
+	"strconv"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 	. "github.com/go-gl/mathgl/mgl32"
@@ -13,14 +15,20 @@ import (
 	"github.com/stretchkennedy/gasteroids/obj"
 )
 
-const HEIGHT = 640
-const WIDTH = 480
-
 func init() {
 	runtime.LockOSThread()
 }
 
 func main() {
+	winHeight, err := strconv.Atoi(os.Getenv("HEIGHT"))
+	if err != nil {
+		winHeight = 480
+	}
+	winWidth, err := strconv.Atoi(os.Getenv("WIDTH"))
+	if err != nil {
+		winWidth = 640
+	}
+
 	//// SETUP
 	// gl/glfw setup
 	glSetup()
@@ -28,7 +36,7 @@ func main() {
 	defer glfwTeardown()
 
 	// window setup
-	window := NewWindow(HEIGHT, WIDTH)
+	window := NewWindow(winWidth, winHeight)
 	window.MakeContextCurrent()
 
 	// game setup
@@ -82,6 +90,7 @@ func glfwSetup()  {
 	if err != nil {
 		log.Panic(err)
 	}
+	glfw.WindowHint(glfw.Resizable, glfw.False)
 }
 
 func glfwTeardown() {
@@ -89,7 +98,7 @@ func glfwTeardown() {
 }
 
 func NewWindow(h int, w int) *glfw.Window {
-	window, err := glfw.CreateWindow(h, w, "Gasteroids", nil, nil)
+	window, err := glfw.CreateWindow(h, w, "Gasteroids", glfw.GetPrimaryMonitor(), nil)
 	if err != nil {
 		log.Panic(err)
 	}
