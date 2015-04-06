@@ -11,21 +11,21 @@ import (
 
 type Engine struct {
 	objects []obj.GameObject
-	window *glfw.Window
+	Window *glfw.Window
 }
 
 func NewEngine(window *glfw.Window, objects []obj.GameObject) *Engine {
-	return &Engine{objects: objects, window: window}
+	return &Engine{objects: objects, Window: window}
 }
 
 func (eng *Engine) Start() {
 	previousTime := glfw.GetTime()
-	for !eng.window.ShouldClose() {
+	for !eng.Window.ShouldClose() {
 		//// SETUP
 		time := glfw.GetTime()
 		elapsed := time - previousTime
 
-		rawWidth, rawHeight:= eng.window.GetFramebufferSize()
+		rawWidth, rawHeight:= eng.Window.GetFramebufferSize()
 		height := float32(10.0)
 		width := float32(rawWidth) / float32(rawHeight) * height
 
@@ -49,7 +49,7 @@ func (eng *Engine) Start() {
 
 		//// END
 		previousTime = time
-		eng.window.SwapBuffers()
+		eng.Window.SwapBuffers()
 		glfw.PollEvents()
 	}
 }
