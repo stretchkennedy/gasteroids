@@ -20,8 +20,8 @@ type GameState struct {
 }
 
 func init() {
-	runtime.LockOSThread()
-	rand.Seed(time.Now().UTC().UnixNano())
+	runtime.LockOSThread() 		           // switching GoRoutines between threads will break OpenGL
+	rand.Seed(time.Now().UTC().UnixNano()) // make random behave unpredictably
 }
 
 func main() {
