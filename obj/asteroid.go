@@ -22,7 +22,7 @@ func NewAsteroid(sides int, position, velocity Vec2) (ast *Asteroid) {
 	vertices := make([]float32, (sides) * glVecNum)
 	maxRadius := float32(0.0)
 	for i := 0; i < sides; i++ {
-		radiusModifier := rand.Float32() / 2.0 + 0.5
+		radiusModifier := (rand.Float32() / 2.0 + 0.5) * (float32(sides) / 10.0)
 		angle := (math.Pi * 2.0) * (float64(i) / float64(sides))
 		vertices[i*glVecNum + 0] = float32(math.Cos(angle)) * radiusModifier //x
 		vertices[i*glVecNum + 1] = float32(math.Sin(angle)) * radiusModifier //y
