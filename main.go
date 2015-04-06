@@ -44,6 +44,7 @@ func main() {
 	objects := []obj.GameObject{
 		obj.NewAsteroid(12, Vec2{3, 3}, Vec2{2, 1}),
 		obj.NewAsteroid(5, Vec2{7, 7}, Vec2{1, 2}),
+		obj.NewPlayer(Vec2{5,5}),
 	}
 	engine := eng.NewEngine(window, objects)
 

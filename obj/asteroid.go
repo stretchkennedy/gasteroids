@@ -16,8 +16,6 @@ type Asteroid struct {
 	geometry geo.Geometry
 }
 
-const glVecNum = 3
-
 func NewAsteroid(sides int, position, velocity Vec2) (ast *Asteroid) {
 	vertices := make([]float32, (sides) * glVecNum)
 	maxRadius := float32(0.0)
@@ -43,7 +41,7 @@ func (ast *Asteroid) Update(height, width float32, elapsed float64) {
 	ast.position =
 		ast.position.Add(
 		ast.velocity.Mul(
-			float32(elapsed)))
+		float32(elapsed)))
 	d := ast.radius * 2
 
 	// for each dimension, wrap position
