@@ -15,11 +15,17 @@ import (
 	"github.com/stretchkennedy/gasteroids/obj"
 )
 
+type GameState struct {
+	objects []obj.GameObject
+}
+
 func init() {
 	runtime.LockOSThread()
+	rand.Seed(time.Now().UTC().UnixNano())
 }
 
 func main() {
+	//// PARSE OPTIONS
 	winHeight, err := strconv.Atoi(os.Getenv("HEIGHT"))
 	if err != nil {
 		winHeight = 480
@@ -34,20 +40,25 @@ func main() {
 	glSetup()
 	glfwSetup()
 	defer glfwTeardown()
-
-	// window setup
 	window := NewWindow(winWidth, winHeight)
 	window.MakeContextCurrent()
 
 	// game setup
-	rand.Seed(time.Now().UTC().UnixNano())
-	var objects []obj.GameObject
-	objects = []obj.GameObject{obj.NewAsteroid(9, Vec2{3, 3},  Vec2{2, 1}), obj.NewAsteroid(9, Vec2{7, 7}, Vec2{1, 2})}
+	state := &GameState{
+		objects: []obj.GameObject{
+			obj.NewAsteroid(9, Vec2{3, 3}, Vec2{2, 1}),
+			obj.NewAsteroid(9, Vec2{7, 7}, Vec2{1, 2}),
+		},
+	}
 
 	//// MAIN LOOP
+	startLoop(window, state)
+}
+
+func startLoop(window *glfw.Window, state *GameState) {
 	previousTime := glfw.GetTime()
 	for !window.ShouldClose() {
-		// retrieve information
+		//// SETUP
 		time := glfw.GetTime()
 		elapsed := time - previousTime
 
@@ -55,11 +66,11 @@ func main() {
 		height := float32(10.0)
 		width := float32(rawWidth) / float32(rawHeight) * height
 
-		// generate VP matrix
 		projection := Ortho2D(0.0, width, height, 0.0) // 2d orthogonal, LRBT
 		view := Ident4() // identity matrix
 		vp := projection.Mul4(view)
 
+		//// THINGS HAPPEN
 		// clear buffer
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
@@ -73,7 +84,7 @@ func main() {
 			o.Render(vp)
 		}
 
-		// end
+		//// END
 		previousTime = time
 		window.SwapBuffers()
 		glfw.PollEvents()
