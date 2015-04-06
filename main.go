@@ -13,11 +13,8 @@ import (
 	"github.com/go-gl/glfw/v3.1/glfw"
 
 	"github.com/stretchkennedy/gasteroids/obj"
+	"github.com/stretchkennedy/gasteroids/eng"
 )
-
-type GameState struct {
-	objects []obj.GameObject
-}
 
 func init() {
 	runtime.LockOSThread() 		           // switching GoRoutines between threads will break OpenGL
@@ -44,51 +41,14 @@ func main() {
 	window.MakeContextCurrent()
 
 	// game setup
-	state := &GameState{
-		objects: []obj.GameObject{
-			obj.NewAsteroid(12, Vec2{3, 3}, Vec2{2, 1}),
-			obj.NewAsteroid(5, Vec2{7, 7}, Vec2{1, 2}),
-		},
+	objects := []obj.GameObject{
+		obj.NewAsteroid(12, Vec2{3, 3}, Vec2{2, 1}),
+		obj.NewAsteroid(5, Vec2{7, 7}, Vec2{1, 2}),
 	}
+	engine := eng.NewEngine(window, objects)
 
 	//// MAIN LOOP
-	startLoop(window, state)
-}
-
-func startLoop(window *glfw.Window, state *GameState) {
-	previousTime := glfw.GetTime()
-	for !window.ShouldClose() {
-		//// SETUP
-		time := glfw.GetTime()
-		elapsed := time - previousTime
-
-		rawWidth, rawHeight:= window.GetFramebufferSize()
-		height := float32(10.0)
-		width := float32(rawWidth) / float32(rawHeight) * height
-
-		projection := Ortho2D(0.0, width, height, 0.0) // 2d orthogonal, LRBT
-		view := Ident4() // identity matrix
-		vp := projection.Mul4(view)
-
-		//// THINGS HAPPEN
-		// clear buffer
-		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-
-		// handle physics, controls, etc.
-		for _, o := range state.objects {
-			o.Update(height, width, elapsed)
-		}
-
-		// draw to window
-		for _, o := range state.objects {
-			o.Render(vp)
-		}
-
-		//// END
-		previousTime = time
-		window.SwapBuffers()
-		glfw.PollEvents()
-	}
+	engine.Start()
 }
 
 func glSetup() {
