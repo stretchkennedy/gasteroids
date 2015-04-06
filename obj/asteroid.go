@@ -61,7 +61,7 @@ func (ast *Asteroid) Update(height, width float32, elapsed float64) {
 }
 
 func (ast *Asteroid) Render(vp Mat4) {
-	//// MVP matrices
+	// MVP matrices
 	model := Translate3D(ast.position.X(), ast.position.Y(), 0) // move model
 	mvp := vp.Mul4(model)
 
