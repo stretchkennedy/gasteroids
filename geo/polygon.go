@@ -64,14 +64,14 @@ func (poly *Polygon) refresh() {
 }
 
 func (poly *Polygon) Render(mvp Mat4) {
-	// MVP matrix
-	mvpLoc := gl.GetUniformLocation(poly.program, gl.Str("mvp\x00"))
-	gl.UniformMatrix4fv(mvpLoc, 1, false, &mvp[0])
-
 	// load relevant things
 	gl.UseProgram(poly.program)
 	gl.BindVertexArray(poly.vao)
 	gl.BindBuffer(gl.ARRAY_BUFFER, poly.vbo)
+
+	// MVP matrix
+	mvpLoc := gl.GetUniformLocation(poly.program, gl.Str("mvp\x00"))
+	gl.UniformMatrix4fv(mvpLoc, 1, false, &mvp[0])
 
 	// draw geometry
 	gl.DrawArrays(gl.LINE_LOOP, glAttrNum, int32(len(poly.vertices) / glVecNum))
