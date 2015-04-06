@@ -60,12 +60,11 @@ func (ast *Asteroid) Update(height, width float32, elapsed float64) {
 	}
 }
 
-func (ast *Asteroid) Render(height, width float32) {
+func (ast *Asteroid) Render(vp Mat4) {
 	//// MVP matrices
-	projection := Ortho2D(0.0, width, height, 0.0) // 2d orthogonal, LRBT
-	view := Ident4() // identity matrix
 	model := Translate3D(ast.position.X(), ast.position.Y(), 0) // move model
+	mvp := vp.Mul4(model)
 
 	// render geometry
-	ast.geometry.Render(projection, view, model)
+	ast.geometry.Render(mvp)
 }

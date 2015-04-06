@@ -18,7 +18,7 @@ type Polygon struct {
 }
 
 type Geometry interface {
-	Render(p Mat4, v Mat4, m Mat4)
+	Render(mvp Mat4)
 }
 
 const glAttrNum = 0
@@ -63,41 +63,29 @@ func (poly *Polygon) refresh() {
 	}
 }
 
-func (poly *Polygon) Render(p Mat4, v Mat4, m Mat4) {
-	// TODO: calculate matrix at each step and pass it down
-	//// MVP matrices
-    // setup projection
-	projectionLoc := gl.GetUniformLocation(poly.program, gl.Str("projection\x00"))
-	gl.UniformMatrix4fv(projectionLoc, 1, false, &p[0])
+func (poly *Polygon) Render(mvp Mat4) {
+	// MVP matrix
+	mvpLoc := gl.GetUniformLocation(poly.program, gl.Str("mvp\x00"))
+	gl.UniformMatrix4fv(mvpLoc, 1, false, &mvp[0])
 
-	// setup camera
-	viewLoc := gl.GetUniformLocation(poly.program, gl.Str("view\x00"))
-	gl.UniformMatrix4fv(viewLoc, 1, false, &v[0])
-
-	// setup model
-	modelLoc := gl.GetUniformLocation(poly.program, gl.Str("model\x00"))
-	gl.UniformMatrix4fv(modelLoc, 1, false, &m[0])
-
-	//// load relevant things
+	// load relevant things
 	gl.UseProgram(poly.program)
 	gl.BindVertexArray(poly.vao)
 	gl.BindBuffer(gl.ARRAY_BUFFER, poly.vbo)
 
-	//// draw geometry
+	// draw geometry
 	gl.DrawArrays(gl.LINE_LOOP, glAttrNum, int32(len(poly.vertices) / glVecNum))
 }
 
 var vertexShader string = `
 #version 130
 
-uniform mat4 projection;
-uniform mat4 view;
-uniform mat4 model;
+uniform mat4 mvp;
 
-in vec3 vp;
+in vec3 vert;
 
 void main() {
-  gl_Position = projection * view * model * vec4(vp, 1.0);
+  gl_Position = mvp * vec4(vert, 1.0);
 }
 ` + "\x00"
 

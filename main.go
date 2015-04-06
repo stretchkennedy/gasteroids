@@ -55,6 +55,11 @@ func main() {
 		height := float32(10.0)
 		width := float32(rawWidth) / float32(rawHeight) * height
 
+		// generate VP matrix
+		projection := Ortho2D(0.0, width, height, 0.0) // 2d orthogonal, LRBT
+		view := Ident4() // identity matrix
+		vp := projection.Mul4(view)
+
 		// clear buffer
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
@@ -65,7 +70,7 @@ func main() {
 
 		// draw to window
 		for _, o := range objects {
-			o.Render(height, width)
+			o.Render(vp)
 		}
 
 		// end
