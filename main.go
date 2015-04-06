@@ -75,12 +75,12 @@ func startLoop(window *glfw.Window, state *GameState) {
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 		// handle physics, controls, etc.
-		for _, o := range objects {
+		for _, o := range state.objects {
 			o.Update(height, width, elapsed)
 		}
 
 		// draw to window
-		for _, o := range objects {
+		for _, o := range state.objects {
 			o.Render(vp)
 		}
 
