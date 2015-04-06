@@ -44,19 +44,20 @@ func (ast *Asteroid) Update(height, width float32, elapsed float64) {
 		ast.position.Add(
 		ast.velocity.Mul(
 			float32(elapsed)))
+	d := ast.radius * 2
 
 	// for each dimension, wrap position
-	if ast.position[0] > width + ast.radius {
-		ast.position[0] = 0 - ast.radius
+	if ast.position[0] > width + d {
+		ast.position[0] = 0 - d
 	}
-	if ast.position[0] < 0 - ast.radius {
-		ast.position[0] = width + ast.radius
+	if ast.position[0] < 0 - d {
+		ast.position[0] = width + d
 	}
-	if ast.position[1] > height + ast.radius {
-		ast.position[1] = 0 - ast.radius
+	if ast.position[1] > height + d {
+		ast.position[1] = 0 - d
 	}
-	if ast.position[1] < 0 - ast.radius {
-		ast.position[1] = height + ast.radius
+	if ast.position[1] < 0 - d {
+		ast.position[1] = height + d
 	}
 }
 
