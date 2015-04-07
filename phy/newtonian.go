@@ -4,15 +4,15 @@ import (
 	. "github.com/go-gl/mathgl/mgl32"
 )
 
-type Newtonian struct {
+type Wrapping struct {
 	Radius float32
 	Position Vec2
 	Velocity Vec2
 	Rotation float32
 }
 
-func NewNewtonian(position, velocity Vec2, rotation, radius float32) *Newtonian {
-	return &Newtonian{
+func NewWrapping(position, velocity Vec2, rotation, radius float32) *Wrapping {
+	return &Wrapping{
 		Position: position,
 		Velocity: velocity,
 		Rotation: rotation,
@@ -20,7 +20,7 @@ func NewNewtonian(position, velocity Vec2, rotation, radius float32) *Newtonian 
 	}
 }
 
-func (p *Newtonian) Update(height, width float32, elapsed float64) {
+func (p *Wrapping) Update(height, width float32, elapsed float64) {
 	p.Position =
 		p.Position.Add(
 		p.Velocity.Mul(

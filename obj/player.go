@@ -12,7 +12,7 @@ import (
 type Player struct {
 	Radius float32
 	Geometry geo.Geometry
-	Physics *phy.Newtonian
+	Physics *phy.Wrapping
 }
 
 func NewPlayer(position Vec2) (pl *Player) {
@@ -25,7 +25,7 @@ func NewPlayer(position Vec2) (pl *Player) {
 	}
 
 	pl = &Player{
-		Physics: phy.NewNewtonian(position, Vec2{0,0}, 0, 1),
+		Physics: phy.NewWrapping(position, Vec2{0,0}, 0, 1),
 		Geometry: geo.NewPolygon(vertices),
 	}
 

@@ -12,7 +12,7 @@ import (
 
 type Asteroid struct {
 	Geometry geo.Geometry
-	Physics *phy.Newtonian
+	Physics *phy.Wrapping
 }
 
 func NewAsteroid(sides int, position, velocity Vec2) (ast *Asteroid) {
@@ -27,7 +27,7 @@ func NewAsteroid(sides int, position, velocity Vec2) (ast *Asteroid) {
 	}
 
 	ast = &Asteroid{
-		Physics: phy.NewNewtonian(position, velocity, 0, maxRadius),
+		Physics: phy.NewWrapping(position, velocity, 0, maxRadius),
 		Geometry: geo.NewPolygon(vertices),
 	}
 
