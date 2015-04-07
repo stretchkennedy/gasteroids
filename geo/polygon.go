@@ -17,10 +17,6 @@ type Polygon struct {
 	vertices []float32
 }
 
-type Geometry interface {
-	Render(mvp Mat4)
-}
-
 const glAttrNum = 0
 const glVecNum = 3
 
