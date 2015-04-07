@@ -6,15 +6,13 @@ import (
 	. "github.com/go-gl/mathgl/mgl32"
 
 	"github.com/stretchkennedy/gasteroids/geo"
+	"github.com/stretchkennedy/gasteroids/phy"
 )
 
 type Player struct {
-	Position Vec2
-	Velocity Vec2
-	Rotation float32
-
-	radius float32
-	geometry geo.Geometry
+	Radius float32
+	Geometry geo.Geometry
+	Physics *phy.Newtonian
 }
 
 func NewPlayer(position Vec2) (pl *Player) {
@@ -27,43 +25,40 @@ func NewPlayer(position Vec2) (pl *Player) {
 	}
 
 	pl = &Player{
-		Position: position,
-		geometry: geo.NewPolygon(vertices),
-		radius: 1,
+		Physics: phy.NewNewtonian(position, Vec2{0,0}, 0),
+		Geometry: geo.NewPolygon(vertices),
+		Radius: 1,
 	}
 
 	return pl
 }
 
 func (pl *Player) Update(height, width float32, elapsed float64) {
-	pl.Rotation += float32(elapsed)
-	pl.Position =
-		pl.Position.Add(
-		pl.Velocity.Mul(
-		float32(elapsed)))
-	d := pl.radius * 2
+	pl.Physics.Rotation += float32(elapsed)
+	pl.Physics.Update(elapsed)
+	d := pl.Radius * 2
 
 	// for each dimension, wrap position
-	if pl.Position[0] > width + d {
-		pl.Position[0] = 0 - d
+	if pl.Physics.Position[0] > width + d {
+		pl.Physics.Position[0] = 0 - d
 	}
-	if pl.Position[0] < 0 - d {
-		pl.Position[0] = width + d
+	if pl.Physics.Position[0] < 0 - d {
+		pl.Physics.Position[0] = width + d
 	}
-	if pl.Position[1] > height + d {
-		pl.Position[1] = 0 - d
+	if pl.Physics.Position[1] > height + d {
+		pl.Physics.Position[1] = 0 - d
 	}
-	if pl.Position[1] < 0 - d {
-		pl.Position[1] = height + d
+	if pl.Physics.Position[1] < 0 - d {
+		pl.Physics.Position[1] = height + d
 	}
 }
 
 func (pl *Player) Render(vp Mat4) {
 	// MVP matrices
-	model := Translate3D(pl.Position.X(), pl.Position.Y(), 0) // move model
-	model = model.Mul4(HomogRotate3DZ(pl.Rotation))
+	model := Translate3D(pl.Physics.Position.X(), pl.Physics.Position.Y(), 0) // move model
+	model = model.Mul4(HomogRotate3DZ(pl.Physics.Rotation))
 	mvp := vp.Mul4(model)
 
 	// render geometry
-	pl.geometry.Render(mvp)
+	pl.Geometry.Render(mvp)
 }

@@ -7,15 +7,13 @@ import (
 	. "github.com/go-gl/mathgl/mgl32"
 
 	"github.com/stretchkennedy/gasteroids/geo"
+	"github.com/stretchkennedy/gasteroids/phy"
 )
 
 type Asteroid struct {
-	Position Vec2
-	Velocity Vec2
-	Rotation float32
-
-	radius float32
-	geometry geo.Geometry
+	Radius float32
+	Geometry geo.Geometry
+	Physics *phy.Newtonian
 }
 
 func NewAsteroid(sides int, position, velocity Vec2) (ast *Asteroid) {
@@ -30,43 +28,40 @@ func NewAsteroid(sides int, position, velocity Vec2) (ast *Asteroid) {
 	}
 
 	ast = &Asteroid{
-		Position: position,
-		Velocity: velocity,
-		geometry: geo.NewPolygon(vertices),
-		radius: maxRadius,
+		Physics: phy.NewNewtonian(position, velocity, 0),
+		Geometry: geo.NewPolygon(vertices),
+		Radius: maxRadius,
 	}
 
 	return ast
 }
 
 func (ast *Asteroid) Update(height, width float32, elapsed float64) {
-	ast.Position =
-		ast.Position.Add(
-		ast.Velocity.Mul(
-		float32(elapsed)))
-	d := ast.radius * 2
+	ast.Physics.Update(elapsed)
+
+	d := ast.Radius * 2
 
 	// for each dimension, wrap position
-	if ast.Position[0] > width + d {
-		ast.Position[0] = 0 - d
+	if ast.Physics.Position[0] > width + d {
+		ast.Physics.Position[0] = 0 - d
 	}
-	if ast.Position[0] < 0 - d {
-		ast.Position[0] = width + d
+	if ast.Physics.Position[0] < 0 - d {
+		ast.Physics.Position[0] = width + d
 	}
-	if ast.Position[1] > height + d {
-		ast.Position[1] = 0 - d
+	if ast.Physics.Position[1] > height + d {
+		ast.Physics.Position[1] = 0 - d
 	}
-	if ast.Position[1] < 0 - d {
-		ast.Position[1] = height + d
+	if ast.Physics.Position[1] < 0 - d {
+		ast.Physics.Position[1] = height + d
 	}
 }
 
 func (ast *Asteroid) Render(vp Mat4) {
 	// MVP matrices
-	model := Translate3D(ast.Position.X(), ast.Position.Y(), 0) // move model
-	model = model.Mul4(HomogRotate3DZ(ast.Rotation))
+	model := Translate3D(ast.Physics.Position.X(), ast.Physics.Position.Y(), 0) // move model
+	model = model.Mul4(HomogRotate3DZ(ast.Physics.Rotation))
 	mvp := vp.Mul4(model)
 
 	// render geometry
-	ast.geometry.Render(mvp)
+	ast.Geometry.Render(mvp)
 }
