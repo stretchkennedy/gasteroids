@@ -11,7 +11,6 @@ import (
 )
 
 type Asteroid struct {
-	Radius float32
 	Geometry geo.Geometry
 	Physics *phy.Newtonian
 }
@@ -28,32 +27,15 @@ func NewAsteroid(sides int, position, velocity Vec2) (ast *Asteroid) {
 	}
 
 	ast = &Asteroid{
-		Physics: phy.NewNewtonian(position, velocity, 0),
+		Physics: phy.NewNewtonian(position, velocity, 0, maxRadius),
 		Geometry: geo.NewPolygon(vertices),
-		Radius: maxRadius,
 	}
 
 	return ast
 }
 
 func (ast *Asteroid) Update(height, width float32, elapsed float64) {
-	ast.Physics.Update(elapsed)
-
-	d := ast.Radius * 2
-
-	// for each dimension, wrap position
-	if ast.Physics.Position[0] > width + d {
-		ast.Physics.Position[0] = 0 - d
-	}
-	if ast.Physics.Position[0] < 0 - d {
-		ast.Physics.Position[0] = width + d
-	}
-	if ast.Physics.Position[1] > height + d {
-		ast.Physics.Position[1] = 0 - d
-	}
-	if ast.Physics.Position[1] < 0 - d {
-		ast.Physics.Position[1] = height + d
-	}
+	ast.Physics.Update(height, width, elapsed)
 }
 
 func (ast *Asteroid) Render(vp Mat4) {

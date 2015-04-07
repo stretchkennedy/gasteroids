@@ -25,9 +25,8 @@ func NewPlayer(position Vec2) (pl *Player) {
 	}
 
 	pl = &Player{
-		Physics: phy.NewNewtonian(position, Vec2{0,0}, 0),
+		Physics: phy.NewNewtonian(position, Vec2{0,0}, 0, 1),
 		Geometry: geo.NewPolygon(vertices),
-		Radius: 1,
 	}
 
 	return pl
@@ -35,22 +34,7 @@ func NewPlayer(position Vec2) (pl *Player) {
 
 func (pl *Player) Update(height, width float32, elapsed float64) {
 	pl.Physics.Rotation += float32(elapsed)
-	pl.Physics.Update(elapsed)
-	d := pl.Radius * 2
-
-	// for each dimension, wrap position
-	if pl.Physics.Position[0] > width + d {
-		pl.Physics.Position[0] = 0 - d
-	}
-	if pl.Physics.Position[0] < 0 - d {
-		pl.Physics.Position[0] = width + d
-	}
-	if pl.Physics.Position[1] > height + d {
-		pl.Physics.Position[1] = 0 - d
-	}
-	if pl.Physics.Position[1] < 0 - d {
-		pl.Physics.Position[1] = height + d
-	}
+	pl.Physics.Update(height, width, elapsed)
 }
 
 func (pl *Player) Render(vp Mat4) {
