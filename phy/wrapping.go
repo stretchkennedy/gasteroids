@@ -10,6 +10,7 @@ type Wrapping struct {
 	Radius float32
 	Position Vec2
 	Velocity Vec2
+	Acceleration Vec2
 	Rotation float32
 	RotationalVelocity float32
 }
@@ -25,6 +26,11 @@ func NewWrapping(position, velocity Vec2, rotation, rotationalVelocity, radius f
 }
 
 func (p *Wrapping) Update(height, width float32, elapsed float64) {
+	p.Velocity =
+		p.Velocity.Add(
+		p.Acceleration.Mul(
+			float32(elapsed)))
+
 	p.Position =
 		p.Position.Add(
 		p.Velocity.Mul(
