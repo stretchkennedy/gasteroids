@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"math/rand"
 	"time"
 	"os"
@@ -40,6 +41,12 @@ func main() {
 				player.Physics.RotationalVelocity = -1
 			case glfw.KeyRight:
 				player.Physics.RotationalVelocity = 1
+			case glfw.KeyUp:
+				a := 10.0
+				player.Physics.Acceleration = Vec2{
+					float32(math.Cos(float64(player.Physics.Rotation)) * a),
+					float32(math.Sin(float64(player.Physics.Rotation)) * a),
+				}
 			}
 		case glfw.Release:
 			switch key {
@@ -47,6 +54,8 @@ func main() {
 				player.Physics.RotationalVelocity = 0
 			case glfw.KeyRight:
 				player.Physics.RotationalVelocity = 0
+			case glfw.KeyUp:
+				player.Physics.Acceleration = Vec2{0, 0}
 			}
 		}
 	})
