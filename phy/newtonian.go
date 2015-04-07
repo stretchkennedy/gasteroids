@@ -1,6 +1,8 @@
 package phy
 
 import (
+	"math"
+
 	. "github.com/go-gl/mathgl/mgl32"
 )
 
@@ -9,13 +11,15 @@ type Wrapping struct {
 	Position Vec2
 	Velocity Vec2
 	Rotation float32
+	RotationalVelocity float32
 }
 
-func NewWrapping(position, velocity Vec2, rotation, radius float32) *Wrapping {
+func NewWrapping(position, velocity Vec2, rotation, rotationalVelocity, radius float32) *Wrapping {
 	return &Wrapping{
 		Position: position,
 		Velocity: velocity,
 		Rotation: rotation,
+		RotationalVelocity: rotationalVelocity,
 		Radius: radius,
 	}
 }
@@ -26,6 +30,7 @@ func (p *Wrapping) Update(height, width float32, elapsed float64) {
 		p.Velocity.Mul(
 			float32(elapsed)))
 
+	p.Rotation += p.RotationalVelocity * math.Pi * 2.0 * float32(elapsed)
 
 	d := p.Radius * 2
 

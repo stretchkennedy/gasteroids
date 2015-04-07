@@ -25,7 +25,7 @@ func NewPlayer(position Vec2) (pl *Player) {
 	}
 
 	pl = &Player{
-		Physics: phy.NewWrapping(position, Vec2{0,0}, 0, 1),
+		Physics: phy.NewWrapping(position, Vec2{0,0}, 0, 0, 1),
 		Geometry: geo.NewPolygon(vertices),
 	}
 
@@ -33,7 +33,6 @@ func NewPlayer(position Vec2) (pl *Player) {
 }
 
 func (pl *Player) Update(height, width float32, elapsed float64) {
-	pl.Physics.Rotation += float32(elapsed)
 	pl.Physics.Update(height, width, elapsed)
 }
 

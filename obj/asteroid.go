@@ -27,7 +27,7 @@ func NewAsteroid(sides int, position, velocity Vec2) (ast *Asteroid) {
 	}
 
 	ast = &Asteroid{
-		Physics: phy.NewWrapping(position, velocity, 0, maxRadius),
+		Physics: phy.NewWrapping(position, velocity, 0, 0.2, maxRadius),
 		Geometry: geo.NewPolygon(vertices),
 	}
 
