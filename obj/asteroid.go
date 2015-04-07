@@ -10,9 +10,11 @@ import (
 )
 
 type Asteroid struct {
+	Position Vec2
+	Velocity Vec2
+	Rotation float32
+
 	radius float32
-	position Vec2
-	velocity Vec2
 	geometry geo.Geometry
 }
 
@@ -28,9 +30,9 @@ func NewAsteroid(sides int, position, velocity Vec2) (ast *Asteroid) {
 	}
 
 	ast = &Asteroid{
+		Position: position,
+		Velocity: velocity,
 		geometry: geo.NewPolygon(vertices),
-		position: position,
-		velocity: velocity,
 		radius: maxRadius,
 	}
 
@@ -38,30 +40,31 @@ func NewAsteroid(sides int, position, velocity Vec2) (ast *Asteroid) {
 }
 
 func (ast *Asteroid) Update(height, width float32, elapsed float64) {
-	ast.position =
-		ast.position.Add(
-		ast.velocity.Mul(
+	ast.Position =
+		ast.Position.Add(
+		ast.Velocity.Mul(
 		float32(elapsed)))
 	d := ast.radius * 2
 
 	// for each dimension, wrap position
-	if ast.position[0] > width + d {
-		ast.position[0] = 0 - d
+	if ast.Position[0] > width + d {
+		ast.Position[0] = 0 - d
 	}
-	if ast.position[0] < 0 - d {
-		ast.position[0] = width + d
+	if ast.Position[0] < 0 - d {
+		ast.Position[0] = width + d
 	}
-	if ast.position[1] > height + d {
-		ast.position[1] = 0 - d
+	if ast.Position[1] > height + d {
+		ast.Position[1] = 0 - d
 	}
-	if ast.position[1] < 0 - d {
-		ast.position[1] = height + d
+	if ast.Position[1] < 0 - d {
+		ast.Position[1] = height + d
 	}
 }
 
 func (ast *Asteroid) Render(vp Mat4) {
 	// MVP matrices
-	model := Translate3D(ast.position.X(), ast.position.Y(), 0) // move model
+	model := Translate3D(ast.Position.X(), ast.Position.Y(), 0) // move model
+	model = model.Mul4(HomogRotate3DZ(ast.Rotation))
 	mvp := vp.Mul4(model)
 
 	// render geometry

@@ -9,10 +9,11 @@ import (
 )
 
 type Player struct {
+	Position Vec2
+	Velocity Vec2
+	Rotation float32
+
 	radius float32
-	position Vec2
-	rotation float32
-	velocity Vec2
 	geometry geo.Geometry
 }
 
@@ -26,8 +27,8 @@ func NewPlayer(position Vec2) (pl *Player) {
 	}
 
 	pl = &Player{
+		Position: position,
 		geometry: geo.NewPolygon(vertices),
-		position: position,
 		radius: 1,
 	}
 
@@ -35,32 +36,32 @@ func NewPlayer(position Vec2) (pl *Player) {
 }
 
 func (pl *Player) Update(height, width float32, elapsed float64) {
-	pl.rotation += float32(elapsed)
-	pl.position =
-		pl.position.Add(
-		pl.velocity.Mul(
+	pl.Rotation += float32(elapsed)
+	pl.Position =
+		pl.Position.Add(
+		pl.Velocity.Mul(
 		float32(elapsed)))
 	d := pl.radius * 2
 
 	// for each dimension, wrap position
-	if pl.position[0] > width + d {
-		pl.position[0] = 0 - d
+	if pl.Position[0] > width + d {
+		pl.Position[0] = 0 - d
 	}
-	if pl.position[0] < 0 - d {
-		pl.position[0] = width + d
+	if pl.Position[0] < 0 - d {
+		pl.Position[0] = width + d
 	}
-	if pl.position[1] > height + d {
-		pl.position[1] = 0 - d
+	if pl.Position[1] > height + d {
+		pl.Position[1] = 0 - d
 	}
-	if pl.position[1] < 0 - d {
-		pl.position[1] = height + d
+	if pl.Position[1] < 0 - d {
+		pl.Position[1] = height + d
 	}
 }
 
 func (pl *Player) Render(vp Mat4) {
 	// MVP matrices
-	model := Translate3D(pl.position.X(), pl.position.Y(), 0) // move model
-	model = model.Mul4(HomogRotate3DZ(pl.rotation))
+	model := Translate3D(pl.Position.X(), pl.Position.Y(), 0) // move model
+	model = model.Mul4(HomogRotate3DZ(pl.Rotation))
 	mvp := vp.Mul4(model)
 
 	// render geometry
